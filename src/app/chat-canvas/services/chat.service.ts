@@ -191,8 +191,8 @@ export class ChatService {
   private createRole(response?: SendMessageSuccessResponse): UiAgent {
     const rootagentRole: UiAgent = {
       type: 'ui_agent',
-      name: this.agentCard()?.name ?? 'Agent',
-      iconUrl: this.agentCard()?.iconUrl ?? 'gemini-color.svg',
+      name: 'Mike check',
+      iconUrl: 'gemini-color.svg',
     };
 
     const subagentCard = response?.result?.metadata?.['a2a_subagent'];
