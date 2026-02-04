@@ -6,6 +6,7 @@ import { PART_RESOLVERS, RENDERERS } from './a2a-renderer/tokens';
 import { PartResolver, RendererEntry } from './a2a-renderer/types';
 import { A2A_SERVICE, A2aService } from './interfaces/a2a-service';
 import { MARKDOWN_RENDERER_SERVICE, MarkdownRendererService } from './interfaces/markdown-renderer-service';
+import { ChatService } from './services/chat.service';
 import { SanitizerMarkdownRendererService } from './services/markdown-renderer.service';
 import { Catalog, DEFAULT_CATALOG, Theme } from '@a2ui/angular';
 import { EnvironmentProviders, Provider, Type, makeEnvironmentProviders } from '@angular/core';
@@ -26,12 +27,13 @@ const DEFAULT_PART_RESOLVERS: readonly PartResolver[] = [
  * This function provides all feature tokens and services needed for the chat canvas:
  * - A2A_SERVICE via the a2aFeature (InjectionToken-based)
  * - A2UI renderers and catalog via the a2uiFeature
+ * - ChatService (provided here to ensure it's in the same injector as A2A_SERVICE)
  * - Default part resolvers and renderers
  *
- * NOTE: ChatService is NOT provided here. It should be provided at the component level
- * (via providers: [ChatService]) where it is used. This allows for component-scoped
- * instances and follows the microfrontend DI pattern where services that depend on
- * feature tokens are provided at component level using Injector.get() for lazy resolution.
+ * IMPORTANT: ChatService MUST be provided at the same injector level as A2A_SERVICE
+ * because it depends on A2A_SERVICE at construction time. Providing it at component
+ * level causes NG0201 errors in module federation scenarios where the component
+ * injector may not inherit app-level providers correctly.
  */
 export function configureChatCanvasFeatures(
   a2aFeature: A2aFeature,
@@ -49,7 +51,12 @@ export function configureChatCanvasFeatures(
     ...additionalFeatures,
   ].flatMap((feature) => [...feature.providers]);
 
-  return makeEnvironmentProviders([...featureProviders]);
+  return makeEnvironmentProviders([
+    // ChatService must be provided here (same level as A2A_SERVICE) to ensure
+    // it can resolve its dependencies in module federation scenarios
+    ChatService,
+    ...featureProviders,
+  ]);
 }
 
 /**

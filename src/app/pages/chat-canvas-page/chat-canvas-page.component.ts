@@ -1,4 +1,4 @@
-import { Component, Injector, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -9,17 +9,14 @@ import { ChatService } from '../../chat-canvas/services/chat.service';
   selector: 'app-chat-canvas-page',
   standalone: true,
   imports: [CommonModule, ChatCanvas, MatButtonModule, MatIconModule],
-  providers: [ChatService],
   templateUrl: './chat-canvas-page.component.html',
   styleUrl: './chat-canvas-page.component.scss',
 })
 export class ChatCanvasPageComponent {
   protected readonly agentName = signal('Orchestrator Agent');
-  private readonly injector = inject(Injector);
+  private readonly chatService = inject(ChatService);
 
   sendMessage(text: string) {
-    // Resolve ChatService lazily to avoid circular injection during component construction
-    const chatService = this.injector.get(ChatService);
-    chatService.sendMessage(text);
+    this.chatService.sendMessage(text);
   }
 }
