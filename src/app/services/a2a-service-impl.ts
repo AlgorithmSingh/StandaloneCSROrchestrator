@@ -1,7 +1,7 @@
 import { A2AClient } from '@a2a-js/sdk/client';
 import { AgentCard, MessageSendParams, Part, SendMessageSuccessResponse } from '@a2a-js/sdk';
 import { A2aService } from '../chat-canvas/interfaces/a2a-service';
-import { Injectable } from '@angular/core';
+import { Injectable, Injector, inject } from '@angular/core';
 
 const AGENT_CARD_URL = 'http://localhost:10002/.well-known/agent-card.json';
 const A2UI_EXTENSION = 'https://a2ui.org/a2a-extension/a2ui/v0.8';
@@ -23,10 +23,19 @@ function fetchWithA2UIHeader(
   return fetch(url, { ...init, headers });
 }
 
+/**
+ * Concrete A2A service implementation.
+ *
+ * This service is providedIn: 'root' and uses Injector for lazy resolution
+ * when needed to break circular dependencies. It is also registered via
+ * the A2A_SERVICE InjectionToken in configureChatCanvasFeatures.
+ */
 @Injectable({
   providedIn: 'root',
 })
 export class A2aServiceImpl implements A2aService {
+  private readonly injector = inject(Injector);
+
   private clientPromise: Promise<A2AClient> | null = null;
   private agentCard: AgentCard | null = null;
 

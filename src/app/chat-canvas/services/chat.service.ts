@@ -11,10 +11,13 @@ import { v4 as uuid } from 'uuid';
 
 /**
  * Service responsible for managing chat interactions.
+ *
+ * NOTE: This service is NOT providedIn: 'root' because it depends on feature tokens
+ * (A2A_SERVICE, MessageProcessor, PART_RESOLVERS) that are provided via
+ * configureChatCanvasFeatures. It must be provided at the same injector level
+ * as those feature tokens (app-level via config or component-level providers).
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable()
 export class ChatService {
   private readonly a2aService = inject(A2A_SERVICE);
   private readonly a2uiMessageProcessor = inject(MessageProcessor);

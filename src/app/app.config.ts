@@ -1,5 +1,11 @@
-import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection } from '@angular/core';
+import {
+  ApplicationConfig,
+  provideBrowserGlobalErrorListeners,
+  provideZonelessChangeDetection,
+} from '@angular/core';
+import { provideRouter } from '@angular/router';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { appRoutes } from './app.routes';
 import {
   configureChatCanvasFeatures,
   usingA2aService,
@@ -12,11 +18,12 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
+    provideRouter(appRoutes),
     provideAnimationsAsync(),
     configureChatCanvasFeatures(
       usingA2aService(A2aServiceImpl),
       usingA2uiRenderers(),
-      usingDefaultSanitizerMarkdownRenderer()
+      usingDefaultSanitizerMarkdownRenderer(),
     ),
   ],
 };

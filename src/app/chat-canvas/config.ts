@@ -22,6 +22,16 @@ const DEFAULT_PART_RESOLVERS: readonly PartResolver[] = [
 
 /**
  * Configure chat canvas features.
+ *
+ * This function provides all feature tokens and services needed for the chat canvas:
+ * - A2A_SERVICE via the a2aFeature (InjectionToken-based)
+ * - A2UI renderers and catalog via the a2uiFeature
+ * - Default part resolvers and renderers
+ *
+ * NOTE: ChatService is NOT provided here. It should be provided at the component level
+ * (via providers: [ChatService]) where it is used. This allows for component-scoped
+ * instances and follows the microfrontend DI pattern where services that depend on
+ * feature tokens are provided at component level using Injector.get() for lazy resolution.
  */
 export function configureChatCanvasFeatures(
   a2aFeature: A2aFeature,
@@ -31,15 +41,15 @@ export function configureChatCanvasFeatures(
   const defaultPartResolversFeature = usingPartResolvers(...DEFAULT_PART_RESOLVERS);
   const defaultRenderersFeature = usingRenderers(...DEFAULT_RENDERERS);
 
-  return makeEnvironmentProviders([
-    [
-      a2aFeature,
-      a2uiFeature,
-      defaultPartResolversFeature,
-      defaultRenderersFeature,
-      ...additionalFeatures,
-    ].map((feature) => feature.providers),
-  ]);
+  const featureProviders = [
+    a2aFeature,
+    a2uiFeature,
+    defaultPartResolversFeature,
+    defaultRenderersFeature,
+    ...additionalFeatures,
+  ].flatMap((feature) => [...feature.providers]);
+
+  return makeEnvironmentProviders([...featureProviders]);
 }
 
 /**
