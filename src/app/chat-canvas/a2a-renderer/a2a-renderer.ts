@@ -31,11 +31,15 @@ export class A2aRenderer {
   protected readonly componentClass = signal<Type<RendererComponent> | null>(null);
 
   constructor() {
+    // Debug: Log available renderers
+    console.log('[Orchestrator][A2aRenderer] Available renderers:', Array.from(this.renderersMap.keys()));
+
     effect(() => {
       const content = this.uiMessageContent();
+      console.log('[Orchestrator][A2aRenderer] Looking for renderer:', content.variant);
       const componentClassLoader = this.renderersMap.get(content.variant);
       if (!componentClassLoader) {
-        console.warn(`No renderer found for variant: ${content.variant}`);
+        console.warn(`No renderer found for variant: ${content.variant}. Available:`, Array.from(this.renderersMap.keys()));
         this.componentClass.set(null);
         return;
       }

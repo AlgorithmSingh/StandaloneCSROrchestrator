@@ -1,7 +1,7 @@
 import { ChatHistory, MessageDecorator } from './components/chat-history/chat-history';
 import { InputArea } from './components/input-area/input-area';
 import { ChatService } from './services/chat.service';
-import { ChangeDetectionStrategy, Component, inject, input, TemplateRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, input, TemplateRef } from '@angular/core';
 
 @Component({
   selector: 'chat-canvas',
@@ -56,4 +56,16 @@ export class ChatCanvas {
   readonly messageDecorator = input<MessageDecorator | undefined>(undefined);
 
   protected readonly chatService = inject(ChatService);
+
+  constructor() {
+    // Debug: Log when history signal changes and which service instance
+    console.log('[Orchestrator][ChatCanvas] Using ChatService instance:', (this.chatService as any).instanceId);
+    effect(() => {
+      const history = this.chatService.history();
+      console.log(`[Orchestrator][ChatCanvas] History signal read from instance ${(this.chatService as any).instanceId}, length:`, history.length);
+      if (history.length > 0) {
+        console.log('[Orchestrator][ChatCanvas] Last message:', JSON.stringify(history[history.length - 1], null, 2));
+      }
+    });
+  }
 }

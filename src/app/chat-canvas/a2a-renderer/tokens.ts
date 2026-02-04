@@ -1,4 +1,4 @@
-import { InjectionToken, inject } from '@angular/core';
+import { InjectionToken } from '@angular/core';
 import {
   ArtifactResolver,
   PartResolver,
@@ -7,34 +7,21 @@ import {
 } from './types';
 
 /** Injection token for PartResolvers. */
-export const PART_RESOLVERS = new InjectionToken<readonly PartResolver[]>('PART_RESOLVERS', {
-  providedIn: 'root',
-  factory: () => [],
-});
+export const PART_RESOLVERS = new InjectionToken<readonly PartResolver[]>('PART_RESOLVERS');
 
 /** Injection token for RendererEntries. */
-export const RENDERERS = new InjectionToken<readonly RendererEntry[]>('RENDERERS', {
-  providedIn: 'root',
-  factory: () => [],
-});
+export const RENDERERS = new InjectionToken<readonly RendererEntry[]>('RENDERERS');
 
 /** Map of variant name to renderer class loader. */
 export const RENDERERS_MAP = new InjectionToken<ReadonlyMap<string, RendererComponentClassLoader>>(
-  'RENDERERS_MAP',
-  {
-    factory: () => {
-      return renderersToMap(inject(RENDERERS));
-    },
-  }
+  'RENDERERS_MAP'
 );
 
 /** Injection token for ArtifactResolvers. */
-export const ARTIFACT_RESOLVERS = new InjectionToken<readonly ArtifactResolver[]>(
-  'ARTIFACT_RESOLVERS',
-  { providedIn: 'root', factory: () => [] }
-);
+export const ARTIFACT_RESOLVERS = new InjectionToken<readonly ArtifactResolver[]>('ARTIFACT_RESOLVERS');
 
-function renderersToMap(
+/** Converts renderer entries to a map. */
+export function renderersToMap(
   renderers: readonly RendererEntry[]
 ): ReadonlyMap<string, RendererComponentClassLoader> {
   const rendererNames = new Set(renderers.map(([variantName]) => variantName));

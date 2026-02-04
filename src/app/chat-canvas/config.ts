@@ -2,14 +2,14 @@ import { A2UI_PART_RENDERER_ENTRY } from './a2a-renderer/catalog/a2ui-part/rende
 import { A2UI_PART_RESOLVER } from './a2a-renderer/catalog/a2ui-part/resolver';
 import { TEXT_PART_RENDERER_ENTRY } from './a2a-renderer/catalog/text-part/renderer-config';
 import { TEXT_PART_RESOLVER } from './a2a-renderer/catalog/text-part/resolver';
-import { PART_RESOLVERS, RENDERERS } from './a2a-renderer/tokens';
+import { PART_RESOLVERS, RENDERERS, RENDERERS_MAP, renderersToMap } from './a2a-renderer/tokens';
 import { PartResolver, RendererEntry } from './a2a-renderer/types';
 import { A2A_SERVICE, A2aService } from './interfaces/a2a-service';
 import { MARKDOWN_RENDERER_SERVICE, MarkdownRendererService } from './interfaces/markdown-renderer-service';
 import { ChatService } from './services/chat.service';
 import { SanitizerMarkdownRendererService } from './services/markdown-renderer.service';
 import { Catalog, DEFAULT_CATALOG, Theme } from '@a2ui/angular';
-import { EnvironmentProviders, Provider, Type, makeEnvironmentProviders } from '@angular/core';
+import { EnvironmentProviders, inject, Provider, Type, makeEnvironmentProviders } from '@angular/core';
 
 const DEFAULT_RENDERERS: readonly RendererEntry[] = [
   A2UI_PART_RENDERER_ENTRY,
@@ -56,6 +56,11 @@ export function configureChatCanvasFeatures(
     // it can resolve its dependencies in module federation scenarios
     ChatService,
     ...featureProviders,
+    // Provide RENDERERS_MAP after featureProviders so RENDERERS is available
+    {
+      provide: RENDERERS_MAP,
+      useFactory: () => renderersToMap(inject(RENDERERS)),
+    },
   ]);
 }
 

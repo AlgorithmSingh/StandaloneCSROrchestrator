@@ -19,6 +19,9 @@ import { v4 as uuid } from 'uuid';
  */
 @Injectable()
 export class ChatService {
+  // Debug: Unique instance ID to detect multiple instances
+  private readonly instanceId = Math.random().toString(36).substring(7);
+
   private readonly a2aService = inject(A2A_SERVICE);
   private readonly a2uiMessageProcessor = inject(MessageProcessor);
   private readonly partResolvers = inject(PART_RESOLVERS);
@@ -32,6 +35,7 @@ export class ChatService {
   readonly a2uiSurfaces = signal(new Map<string, Types.Surface>(this.a2uiMessageProcessor.getSurfaces()));
 
   constructor() {
+    console.log(`[Orchestrator][ChatService] Instance created: ${this.instanceId}`);
     // Fetch agent card on init
     this.a2aService.getAgentCard().then(
       (card) => this.agentCard.set(card),
@@ -53,7 +57,7 @@ export class ChatService {
   }
 
   async sendMessage(text: string) {
-    console.log('[Orchestrator][ChatService] sendMessage called with:', text);
+    console.log(`[Orchestrator][ChatService:${this.instanceId}] sendMessage called with:`, text);
     this.addUserAndPendingAgentMessages(text);
     this.isA2aStreamOpen.set(true);
     console.log('[Orchestrator][ChatService] Stream opened, sending to A2A service...');
